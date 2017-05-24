@@ -76,3 +76,11 @@ stage ("Build") {
 
 }
 
+stage ("Examples") {
+  node {
+    withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
+      def top_dir = "ableC_Home/extensions/ableC-condition-tables"
+      sh "cd ${top_dir} && make examples"
+    }
+  }
+}
