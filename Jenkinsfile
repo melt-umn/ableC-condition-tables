@@ -76,6 +76,7 @@ stage ("Build") {
 
 }
 
+
 stage ("Examples") {
   node {
     withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
@@ -85,6 +86,7 @@ stage ("Examples") {
   }
 }
 
+
 stage ("Modular Analyses") {
   node {
     withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
@@ -93,6 +95,7 @@ stage ("Modular Analyses") {
     }
   }
 }
+
 
 stage ("Test") {
   node {
