@@ -76,33 +76,3 @@ stage ("Build") {
 
 }
 
-
-stage ("Examples") {
-  node {
-    withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-      def top_dir = "ableC_Home/extensions/ableC-condition-tables"
-      sh "cd ${top_dir} && make examples"
-    }
-  }
-}
-
-
-stage ("Modular Analyses") {
-  node {
-    withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-      def top_dir = "ableC_Home/extensions/ableC-condition-tables"
-      sh "cd ${top_dir} && make analyses"
-    }
-  }
-}
-
-
-stage ("Test") {
-  node {
-    withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-      def top_dir = "ableC_Home/extensions/ableC-condition-tables"
-      sh "cd ${top_dir} && make test"
-    }
-  }
-}
-
