@@ -13,7 +13,7 @@ altitude switch that uses condition tables can be found in
 
 
 Below is a sample condition table, from `examples/simple.xc` that
-references three Boolean values `b1, `b2`, and `b3`.
+references three Boolean values `b1`, `b2`, and `b3`.
 
 \\\
     int c1 = table { b1 && b3 : T F
