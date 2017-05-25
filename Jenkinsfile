@@ -43,7 +43,7 @@ properties([
 /* a node allocates an executor to actually do work */
 node {
 	try {
-    notifyBuild('STARTED')
+//    notifyBuild('STARTED')
 
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
@@ -100,7 +100,7 @@ node {
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("ableC-condition-tables") {
-          sh "make analyses ABLEC_HOME=\"${ablec_home}\""
+          sh "make analyses EXT_HOME=\"${ablec_home}\""
         }
       }
     }
@@ -113,12 +113,12 @@ node {
       }
     }
 	} catch (e) {
-		currentBuild.result = "FAILED"
+		currentBuild.result = 'FAILURE'
 		throw e
 	} finally {
-//		if (currentBuild.result == "FAILED") {
+		if (currentBuild.result != 'STARTED' && currentBuild.result != 'SUCCESSFUL') {
 			notifyBuild(currentBuild.result)
-//		}
+		}
 	}
 }
 
