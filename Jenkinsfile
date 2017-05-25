@@ -52,6 +52,11 @@ node {
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
+      /* don't check out extension under ableC_Home because doing so would allow
+       * the Makefiles to find ableC with the included search paths, but we want
+       * to explicitly specify the path to ableC according to ABLEC_BASE */
+      checkout scm
+
       checkout([ $class: 'GitSCM',
                  branches: [[name: '*/develop']],
                  doGenerateSubmoduleConfigurations: false,
@@ -65,58 +70,34 @@ node {
                  ]
                ])
 
-      /* don't check out extension under ableC_Home because doing so would allow
-       * the Makefiles to find ableC with the included search paths, but we want
-       * to explicitly specify the path to ableC according to ABLEC_BASE */
-      checkout([ $class: 'GitSCM',
-                 branches: [[name: '*/master']],
-                 doGenerateSubmoduleConfigurations: false,
-                 extensions: [
-                   [ $class: 'RelativeTargetDirectory',
-                     relativeTargetDir: 'ableC-condition-tables']
-                 ],
-                 submoduleCfg: [],
-                 userRemoteConfigs: [
-                   [url: 'https://github.com/melt-umn/ableC-condition-tables.git']
-                 ]
-               ])
-
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
-          sh "make build ABLEC_HOME=\"${ablec_home}\""
-        }
+        sh "make build ABLEC_HOME=\"${ablec_home}\""
       }
     }
     
     stage ("Examples") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
-          sh "make examples ABLEC_HOME=\"${ablec_home}\""
-        }
+        sh "make examples ABLEC_HOME=\"${ablec_home}\""
       }
     }
 
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
-          sh "make analyses EXT_HOME=\"${ablec_home}\""
-        }
+        sh "make analyses EXT_HOME=\"${ablec_home}\""
       }
     }
 
     stage ("Test") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
-          sh "make test ABLEC_HOME=\"${ablec_home}\""
-        }
+        sh "make test ABLEC_HOME=\"${ablec_home}\""
       }
     }
 	} catch (e) {
 		currentBuild.result = 'FAILURE'
 		throw e
 	} finally {
-		if (currentBuild.result != 'STARTED' && currentBuild.result != 'SUCCESSFUL') {
+		if (currentBuild.result == 'FAILURE') {
 			notifyBuild(currentBuild.result)
 		}
 	}
