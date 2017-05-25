@@ -65,15 +65,16 @@ node {
                  ]
                ])
 
-      /* don't check out extension under ableC_Home because doing so would allow
+      /* TODO: don't check out extension under ableC_Home because doing so would allow
        * the Makefiles to find ableC with the included search paths, but we want
        * to explicitly specify the path to ableC according to ABLEC_BASE */
+      /* TODO: don't hardcode master */
       checkout([ $class: 'GitSCM',
                  branches: [[name: '*/master']],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [
                    [ $class: 'RelativeTargetDirectory',
-                     relativeTargetDir: 'ableC-condition-tables']
+                     relativeTargetDir: 'ableC_Home/extensions/ableC-condition-tables']
                  ],
                  submoduleCfg: [],
                  userRemoteConfigs: [
@@ -83,7 +84,7 @@ node {
 
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
+        dir("ableC_Home/extensions/ableC-condition-tables") {
           sh "make build ABLEC_HOME=\"${ablec_home}\""
         }
       }
@@ -91,7 +92,7 @@ node {
     
     stage ("Examples") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
+        dir("ableC_Home/extensions/ableC-condition-tables") {
           sh "make examples ABLEC_HOME=\"${ablec_home}\""
         }
       }
@@ -99,7 +100,7 @@ node {
 
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
+        dir("ableC_Home/extensions/ableC-condition-tables") {
           sh "make analyses EXT_HOME=\"${ablec_home}\""
         }
       }
@@ -107,7 +108,7 @@ node {
 
     stage ("Test") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC-condition-tables") {
+        dir("ableC_Home/extensions/ableC-condition-tables") {
           sh "make test ABLEC_HOME=\"${ablec_home}\""
         }
       }
