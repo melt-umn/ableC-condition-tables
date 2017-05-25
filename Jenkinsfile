@@ -49,7 +49,7 @@ node {
      * otherwise prepend full path to workspace */
     def ablec_base = (ABLEC_BASE == 'ableC_Home/ableC') ? "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
     def ablec_home = "${ablec_base}/../"
-    def grammar_dirs = "${ablec_base} grammars"
+    def grammar_dirs = "${ablec_base} ${WORKSPACE}/grammars"
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
