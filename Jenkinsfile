@@ -43,7 +43,7 @@ properties([
 /* a node allocates an executor to actually do work */
 node {
 	try {
-//    notifyBuild('STARTED')
+    notifyBuild('STARTED')
 
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
@@ -116,9 +116,9 @@ node {
 		currentBuild.result = "FAILED"
 		throw e
 	} finally {
-		if (currentBuild.result == "FAILED") {
+//		if (currentBuild.result == "FAILED") {
 			notifyBuild(currentBuild.result)
-		}
+//		}
 	}
 }
 
