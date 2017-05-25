@@ -47,7 +47,7 @@ node {
 
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
-    def ablec_base = (ABLEC_BASE == 'ableC_Home/ableC') ?  "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
+    def ablec_base = (ABLEC_BASE == 'ableC_Home/ableC') ? "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
@@ -83,7 +83,7 @@ node {
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("ableC-condition-tables") {
-          sh "make build ABLEC_HOME=${ablec_base}"
+          sh "make build ABLEC_HOME=\"${ablec_base}\""
         }
       }
     }
@@ -91,7 +91,7 @@ node {
     stage ("Examples") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("ableC-condition-tables") {
-          sh "make examples ABLEC_HOME=${ablec_base}"
+          sh "make examples ABLEC_HOME=\"${ablec_base}\""
         }
       }
     }
@@ -99,7 +99,7 @@ node {
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("ableC-condition-tables") {
-          sh "make analyses ABLEC_HOME=${ablec_base}"
+          sh "make analyses ABLEC_HOME=\"${ablec_base}\""
         }
       }
     }
@@ -107,7 +107,7 @@ node {
     stage ("Test") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("ableC-condition-tables") {
-          sh "make test ABLEC_HOME=${ablec_base}"
+          sh "make test ABLEC_HOME=\"${ablec_base}\""
         }
       }
     }
