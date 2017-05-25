@@ -49,6 +49,7 @@ node {
      * otherwise prepend full path to workspace */
     def ablec_base = (ABLEC_BASE == 'ableC_Home/ableC') ? "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
     def ablec_home = "${ablec_base}/../"
+    def grammar_dirs = "${ablec_base} grammars"
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
@@ -72,7 +73,7 @@ node {
 
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        sh "make build ABLEC_HOME=\"${ablec_home}\""
+        sh "make build ABLEC_HOME=\"${ablec_home}\" GRAMMAR_DIRS=\"${grammar_dirs}\""
       }
     }
     
