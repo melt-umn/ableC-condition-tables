@@ -15,7 +15,7 @@ properties([
       ],
       [ $class: 'StringParameterDefinition',
         name: 'ABLEC_BASE',
-        defaultValue: "ableC_Home/ableC",
+        defaultValue: "ableC",
         description: 'AbleC installation path to use.'
       ]
     ]
@@ -47,17 +47,22 @@ node {
 
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
-    def ablec_base = (ABLEC_BASE == 'ableC_Home/ableC') ? "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
-    def ablec_home = "${ablec_base}/../"
+    def ablec_base = (ABLEC_BASE == 'ableC') ? "${WORKSPACE}/${ABLEC_BASE}" : ABLEC_BASE
+    def include_grammars = "-I ${ablec_base} -I ${WORKSPACE}/grammars"
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
+      /* don't check out extension under ableC_Home because doing so would allow
+       * the Makefiles to find ableC with the included search paths, but we want
+       * to explicitly specify the path to ableC according to ABLEC_BASE */
+      checkout scm
+
       checkout([ $class: 'GitSCM',
                  branches: [[name: '*/develop']],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [
                    [ $class: 'RelativeTargetDirectory',
-                     relativeTargetDir: 'ableC_Home/ableC']
+                     relativeTargetDir: 'ableC']
                  ],
                  submoduleCfg: [],
                  userRemoteConfigs: [
@@ -65,51 +70,34 @@ node {
                  ]
                ])
 
-      /* TODO: don't check out extension under ableC_Home because doing so would allow
-       * the Makefiles to find ableC with the included search paths, but we want
-       * to explicitly specify the path to ableC according to ABLEC_BASE */
-      /* TODO: don't hardcode master */
-      checkout([ $class: 'GitSCM',
-                 branches: [[name: '*/master']],
-                 doGenerateSubmoduleConfigurations: false,
-                 extensions: [
-                   [ $class: 'RelativeTargetDirectory',
-                     relativeTargetDir: 'ableC_Home/extensions/ableC-condition-tables']
-                 ],
-                 submoduleCfg: [],
-                 userRemoteConfigs: [
-                   [url: 'https://github.com/melt-umn/ableC-condition-tables.git']
-                 ]
-               ])
-
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC_Home/extensions/ableC-condition-tables") {
-          sh "make build ABLEC_HOME=\"${ablec_home}\""
+        dir("examples") {
+          sh "silver -o ableC.jar ${include_grammars} artifact"
         }
       }
     }
     
     stage ("Examples") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC_Home/extensions/ableC-condition-tables") {
-          sh "make examples ABLEC_HOME=\"${ablec_home}\""
-        }
+        sh "make examples"
       }
     }
 
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC_Home/extensions/ableC-condition-tables") {
-          sh "make analyses EXT_HOME=\"${ablec_home}\""
+        dir("modular_analyses") {
+          sh "silver -o MDA.jar ${include_grammars} --clean determinism"
+          sh "silver -o MWDA.jar ${include_grammars} --clean --warn-all --warn-error well_definedness"
         }
       }
     }
 
     stage ("Test") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
-        dir("ableC_Home/extensions/ableC-condition-tables") {
-          sh "make test ABLEC_HOME=\"${ablec_home}\""
+        dir("test") {
+          sh "silver -o ableC.jar ${include_grammars} artifact"
+          sh "make"
         }
       }
     }
@@ -117,9 +105,14 @@ node {
 		currentBuild.result = 'FAILURE'
 		throw e
 	} finally {
+    def previousResult = currentBuild.previousBuild?.result
+
 		if (currentBuild.result == 'FAILURE') {
 			notifyBuild(currentBuild.result)
-		}
+		} else if (currentBuild.result == null &&
+        previousResult && previousResult == 'FAILURE') {
+			notifyBuild('BACK_TO_NORMAL')
+    }
 	}
 }
 
@@ -142,7 +135,7 @@ def notifyBuild(String buildStatus = 'STARTED') {
   if (buildStatus == 'STARTED') {
     color = 'YELLOW'
     colorCode = '#FFFF00'
-  } else if (buildStatus == 'SUCCESSFUL') {
+  } else if (buildStatus == 'SUCCESSFUL' || buildStatus == 'BACK_TO_NORMAL') {
     color = 'GREEN'
     colorCode = '#00FF00'
   } else {
