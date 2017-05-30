@@ -73,7 +73,7 @@ node {
       /* env.PATH is the master's path, not the executor's */
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("examples") {
-          sh "silver -o ableC.jar ${include_grammars} artifact"
+          sh "silver -G ${WORKSPACE} -o ableC.jar ${include_grammars} artifact"
         }
       }
     }
@@ -87,8 +87,8 @@ node {
     stage ("Modular Analyses") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("modular_analyses") {
-          sh "silver -o MDA.jar ${include_grammars} --clean determinism"
-          sh "silver -o MWDA.jar ${include_grammars} --clean --warn-all --warn-error well_definedness"
+          sh "silver -G ${WORKSPACE} -o MDA.jar ${include_grammars} --clean determinism"
+          sh "silver -G ${WORKSPACE} -o MWDA.jar ${include_grammars} --clean --warn-all --warn-error well_definedness"
         }
       }
     }
@@ -96,7 +96,7 @@ node {
     stage ("Test") {
       withEnv(["PATH=${SILVER_BASE}/support/bin/:${env.PATH}"]) {
         dir("test") {
-          sh "silver -o ableC.jar ${include_grammars} artifact"
+          sh "silver -G ${WORKSPACE} -o ableC.jar ${include_grammars} artifact"
           sh "make"
         }
       }
