@@ -72,7 +72,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
   top.ftExprs = tvl.ftExprs;
   
   top.errors <-
-    if abs:typeAssignableTo(abs:builtinType([], abs:boolType()), e.abs:typerep) then []
+    if abs:typeAssignableTo(abs:builtinType(abs:nilQualifier(), abs:boolType()), e.abs:typerep) then []
     else [err(e.location, "Condition expression expected type boolean (got " ++ abs:showType(e.abs:typerep) ++ ")")];
   
   -- Generate a name
@@ -85,7 +85,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
         [],
         abs:nilAttribute(),
         abs:directTypeExpr(
-          abs:builtinType([], abs:boolType())),
+          abs:builtinType(abs:nilQualifier(), abs:boolType())),
         abs:foldDeclarator([
           abs:declarator(
             ident,
