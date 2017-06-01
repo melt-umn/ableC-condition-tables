@@ -58,8 +58,7 @@ node {
       checkout scm
 
       checkout([ $class: 'GitSCM',
-//                 branches: [[name: '*/develop']],
-                 branches: [[name: '*/feature/type_qualifiers']],
+                 branches: [[name: '*/develop']],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [
                    [ $class: 'RelativeTargetDirectory',
@@ -150,7 +149,7 @@ def notifyBuild(String buildStatus = 'STARTED') {
   emailext(
       subject: subject,
       body: details,
-//			to: 'evw@umn.edu',
+			to: 'evw@umn.edu',
       recipientProviders: [[$class: 'CulpritsRecipientProvider']]
     )
 }
