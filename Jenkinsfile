@@ -75,7 +75,7 @@ node {
         //dir("examples") {
         //  sh "silver -G ${WORKSPACE} -o ableC.jar ${include_grammars} artifact"
         //}
-	sh "make buid"
+	sh "make build"
       }
     }
     
