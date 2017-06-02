@@ -42,8 +42,8 @@ properties([
 
 /* a node allocates an executor to actually do work */
 node {
-	try {
-//    notifyBuild('STARTED')
+  try {
+    // notifyBuild('STARTED')
 
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
@@ -101,19 +101,22 @@ node {
         }
       }
     }
-	} catch (e) {
-		currentBuild.result = 'FAILURE'
-		throw e
-	} finally {
+  }
+  catch (e) {
+    currentBuild.result = 'FAILURE'
+    throw e
+  }
+  finally {
     def previousResult = currentBuild.previousBuild?.result
 
-		if (currentBuild.result == 'FAILURE') {
-			notifyBuild(currentBuild.result)
-		} else if (currentBuild.result == null &&
-        previousResult && previousResult == 'FAILURE') {
-			notifyBuild('BACK_TO_NORMAL')
+    if (currentBuild.result == 'FAILURE') {
+      notifyBuild(currentBuild.result)
     }
-	}
+    else if (currentBuild.result == null &&
+             previousResult && previousResult == 'FAILURE') {
+      notifyBuild('BACK_TO_NORMAL')
+    }
+  }
 }
 
 /* Slack / email notification
@@ -147,10 +150,10 @@ def notifyBuild(String buildStatus = 'STARTED') {
   slackSend (color: colorCode, message: summary)
 
   emailext(
-      subject: subject,
-      body: details,
-			to: 'evw@umn.edu',
-      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
-    )
+    subject: subject,
+    body: details,
+    to: 'evw@umn.edu',
+    recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+  )
 }
 
