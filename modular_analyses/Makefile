@@ -8,7 +8,11 @@ SVFLAGS=$(addprefix -I , $(GRAMMAR_DIRS))
 
 all: mda mwda
 
-mda:
+mda: MDA.jar
+
+mwda: MWDA.jar
+
+MDA.jar:
 	touch $(wildcard determinism/*.sv)
 	silver -o MDA.jar $(SVFLAGS) --clean determinism
 
@@ -22,7 +26,7 @@ mda:
 	@echo "that indicates that the analysis was successful."
 	@echo ""
 
-mwda:
+MWDA.jar:
 	touch $(wildcard well_definedness/*.sv)
 	silver -o MWDA.jar $(SVFLAGS) --clean --warn-all --warn-error well_definedness
 	@echo ""

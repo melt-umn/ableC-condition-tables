@@ -102,7 +102,8 @@ node {
     stage ("Modular Analyses") {
       withEnv(env) {
         dir("extensions/ableC-condition-tables") {
-          sh "make analyses"
+          /* use -B option to always run analyses */
+          sh "make -B analyses"
         }
       }
     }
@@ -110,7 +111,8 @@ node {
     stage ("Test") {
       withEnv(env) {
         dir("extensions/ableC-condition-tables") {
-          sh "make test"
+          /* use -B option to always run tests */
+          sh "make -B test"
         }
       }
     }
