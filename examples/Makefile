@@ -1,8 +1,9 @@
 # Top-level directory containing ableC repository and extensions folder
-ABLEC_HOME=../../..
+ABLEC_BASE?=../../../ableC
+EXTS_BASE?=../../../extensions
 
 # All directories containing grammars that may be included
-GRAMMAR_DIRS=$(ABLEC_HOME)/ableC $(ABLEC_HOME)/extensions/ableC-condition-tables/grammars
+GRAMMAR_DIRS=$(ABLEC_BASE) $(EXTS_BASE)/ableC-condition-tables/grammars
 
 # All silver files in included grammars, to be included as dependancies
 GRAMMAR_SOURCES=$(shell find $(GRAMMAR_DIRS) -name *.sv -print0 | xargs -0)
@@ -12,8 +13,8 @@ all: ableC.jar examples
 
 ableC.jar: $(GRAMMAR_SOURCES)
 	touch artifact/Artifact.sv
-	silver -o $@ -I $(ABLEC_HOME)/ableC \
-		     -I $(ABLEC_HOME)/extensions/ableC-condition-tables/grammars \
+	silver -o $@ -I $(ABLEC_BASE) \
+		     -I $(EXTS_BASE)/ableC-condition-tables/grammars \
 		     artifact
 
 examples: simple.out altitude_switch.out
