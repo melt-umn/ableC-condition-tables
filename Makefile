@@ -41,7 +41,8 @@ mwda:
 	@cd modular_analyses && make mwda
 
 test:
-	@cd test && make -ij
+	# the -j option runs the tests in parallel
+	@cd test && make -j
 
 clean:
 	rm -f *~ 

@@ -45,6 +45,8 @@ node {
   try {
     // notifyBuild('STARTED')
 
+    def extension_name = "ableC-condition-tables"
+
     /* the full path to ableC, use parameter as-is if changed from default,
      * otherwise prepend full path to workspace */
     def ablec_base = (params.ABLEC_BASE == 'ableC') ? "${WORKSPACE}/${params.ABLEC_BASE}" : params.ABLEC_BASE
@@ -64,7 +66,7 @@ node {
                doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
                extensions: [
                  [ $class: 'RelativeTargetDirectory',
-                   relativeTargetDir: "extensions/ableC-condition-tables"]
+                   relativeTargetDir: "extensions/${extension_name}"]
                  ],
                submoduleCfg: scm.submoduleCfg,
                userRemoteConfigs: scm.userRemoteConfigs
@@ -85,7 +87,7 @@ node {
 
       /* env.PATH is the master's path, not the executor's */
       withEnv(env) {
-        dir("extensions/ableC-condition-tables") {
+        dir("extensions/${extension_name}") {
           sh "make build"
         }
       }
@@ -93,7 +95,7 @@ node {
     
     stage ("Examples") {
       withEnv(env) {
-        dir("extensions/ableC-condition-tables") {
+        dir("extensions/${extension_name}") {
           sh "make examples"
         }
       }
@@ -101,7 +103,7 @@ node {
 
     stage ("Modular Analyses") {
       withEnv(env) {
-        dir("extensions/ableC-condition-tables") {
+        dir("extensions/${extension_name}") {
           /* use -B option to always run analyses */
           sh "make -B analyses"
         }
@@ -110,7 +112,7 @@ node {
 
     stage ("Test") {
       withEnv(env) {
-        dir("extensions/ableC-condition-tables") {
+        dir("extensions/${extension_name}") {
           /* use -B option to always run tests */
           sh "make -B test"
         }
