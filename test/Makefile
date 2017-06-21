@@ -11,7 +11,7 @@ GRAMMAR_DIRS=$(wildcard $(EXTS_BASE)/*/grammars) $(ABLEC_BASE)
 # All silver files in included grammars, to be included as dependancies
 GRAMMAR_SOURCES=$(shell find $(GRAMMAR_DIRS) -name *.sv -print0 | xargs -0)
 # Flags passed to silver including the appropriate directories
-SVFLAGS=$(addprefix -I , $(GRAMMAR_DIRS))
+override SVFLAGS+=$(addprefix -I , $(GRAMMAR_DIRS))
 
 # All extended C files to test
 XC_FILES=$(wildcard translate_error/*.xc) $(wildcard runtime_error/*.xc) $(wildcard positive/*.xc)

@@ -53,7 +53,8 @@ node {
     def env = [
       "PATH=${params.SILVER_BASE}/support/bin/:${env.PATH}",
       "ABLEC_BASE=${ablec_base}",
-      "EXTS_BASE=${WORKSPACE}/extensions"
+      "EXTS_BASE=${WORKSPACE}/extensions",
+      "SVFLAGS='-G ${WORKSPACE}'"
     ]
 
     /* stages are pretty much just labels about what's going on */
