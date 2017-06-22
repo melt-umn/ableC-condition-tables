@@ -89,7 +89,7 @@ node {
       /* env.PATH is the master's path, not the executor's */
       withEnv(env) {
         dir("extensions/${extension_name}") {
-          sh "make build"
+          sh "make clean build"
         }
       }
     }
