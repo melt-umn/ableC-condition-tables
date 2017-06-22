@@ -54,11 +54,15 @@ node {
       "PATH=${params.SILVER_BASE}/support/bin/:${env.PATH}",
       "ABLEC_BASE=${ablec_base}",
       "EXTS_BASE=${WORKSPACE}/extensions",
-      "SVFLAGS=-G ${WORKSPACE}"
+      "SVFLAGS=-G ${WORKSPACE}/generated"
     ]
 
     /* stages are pretty much just labels about what's going on */
     stage ("Build") {
+      /* Clean Silver-generated files from previous builds in this workspace */
+      sh "mkdir -p generated"
+      sh "rm -rf generated/* || true"
+
       /* don't check out extension under ableC_Home because doing so would allow
        * the Makefiles to find ableC with the included search paths, but we want
        * to explicitly specify the path to ableC according to ABLEC_BASE */
