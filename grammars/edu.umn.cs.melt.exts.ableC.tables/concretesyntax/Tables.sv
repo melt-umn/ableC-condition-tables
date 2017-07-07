@@ -13,7 +13,6 @@ terminal TrueTV_t   'T';
 terminal FalseTV_t  'F';
 terminal StarTV_t   '*';
 
--- TODO: investigate why this turns out to be needed, someday.
 disambiguate NewLine2_t, cnc:NewLine_t
 {
   pluck NewLine2_t;
