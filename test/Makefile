@@ -29,12 +29,19 @@ TESTS=$(XC_FILES:.xc=.test)
 # All directories contining extension header files that may be included
 XC_INCLUDE_DIRS=$(wildcard $(EXTS_BASE)/*/include)
 # Flags passed to ableC including the appropriate directories
-XCFLAGS=$(addprefix -I, $(XC_INCLUDE_PATH))
+override XCFLAGS+=$(addprefix -I, $(XC_INCLUDE_PATH))
+# Flags passed to Java when invoking ableC
+override JAVAFLAGS+=-Xss6M
+
+# Flags passed to the C compiler, e.g. to enable various compiler extensions
+override CFLAGS+=
 
 # All directories contining extension libraries that may be linked
 LIB_DIRS=$(wildcard $(EXTS_BASE)/*/lib)
 # Flags passed to the linker specifying the appropriate directories
-LDLIBS=$(addprefix -L, $(LIB_DIRS))
+override LDFLAGS+=$(addprefix -L,$(LIB_DIRS))
+# Flags passed to the linker specifying libraries to link
+LDLIBS=
 
 all: $(ABLEC_JAR) $(C_FILES) $(OBJECTS) $(EXECUTABLES) $(TESTS)
 
@@ -43,14 +50,14 @@ $(ABLEC_JAR): $(GRAMMAR_SOURCES)
 	silver -o $(ABLEC_JAR) $(SVFLAGS) $(ARTIFACT)
 
 %.c: %.xc $(ABLEC_JAR)
-	java -jar $(ABLEC_JAR) $< $(XCFLAGS)
+	java $(JAVAFLAGS) -jar $(ABLEC_JAR) $< $(XCFLAGS)
 
 %.out: %.o
 	$(CC) $(LDFLAGS) $< $(LOADLIBES) $(LDLIBS) -o $@
 
 translate_error/%.test: translate_error/%.xc $(ABLEC_JAR)
 	@echo "java -jar $(ABLEC_JAR) $< $(XCFLAGS)"
-	@if java -jar $(ABLEC_JAR) $< $(XCFLAGS); then exit 1; fi
+	@if java $(JAVAFLAGS) -jar $(ABLEC_JAR) $< $(XCFLAGS); then exit 1; fi
 	touch $@
 
 runtime_error/%.test: runtime_error/%.out

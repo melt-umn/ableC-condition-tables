@@ -20,22 +20,22 @@ ableC.jar: $(GRAMMAR_SOURCES)
 examples: simple.out altitude_switch.out
 
 simple.c: ableC.jar simple.xc
-	java -jar ableC.jar simple.xc
+	java -Xss6M -jar ableC.jar simple.xc
 
 simple.out: simple.c
 	gcc simple.c -o simple.out
 
 altitude_switch.c: ableC.jar altitude_switch.xc
-	java -jar ableC.jar altitude_switch.xc
+	java -Xss6M -jar ableC.jar altitude_switch.xc
 
 altitude_switch.out: altitude_switch.c
 	gcc altitude_switch.c -o altitude_switch.out
 
 type_error.c: ableC.jar type_error.xc
-	java -jar ableC.jar type_error.xc
+	java -Xss6M -jar ableC.jar type_error.xc
 
 mismatched_rows.c: ableC.jar mismatched_rows.xc
-	java -jar ableC.jar mismatched_rows.xc
+	java -Xss6M -jar ableC.jar mismatched_rows.xc
 
 clean:
 	rm -f *~ *.i *.c *.o *.out *.test *.jar *.copperdump.html build.xml
