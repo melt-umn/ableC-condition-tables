@@ -1,6 +1,6 @@
 grammar edu:umn:cs:melt:exts:ableC:tables:abstractsyntax;
 
-imports edu:umn:cs:melt:ableC:abstractsyntax as abs;
+imports edu:umn:cs:melt:ableC:abstractsyntax:host as abs;
 imports edu:umn:cs:melt:ableC:abstractsyntax:construction as abs;
 imports edu:umn:cs:melt:ableC:abstractsyntax:env as abs;
 
@@ -177,18 +177,12 @@ abs:Expr ::= ne::abs:Expr
 function logicalOr
 abs:Expr ::= e1::abs:Expr e2::abs:Expr
 {
-  return abs:binaryOpExpr(e1, op, e2, location=e1.location);
-  
-  local op :: abs:BinOp =
-    abs:boolOp(abs:orBoolOp(location=e1.location), location=e1.location);
+  return abs:orExpr(e1, e2, location=e1.location);
 }
 function logicalAnd
 abs:Expr ::= e1::abs:Expr e2::abs:Expr
 {
-  return abs:binaryOpExpr(e1, op, e2, location=e1.location);
-  
-  local op :: abs:BinOp =
-    abs:boolOp(abs:andBoolOp(location=e1.location), location=e1.location);
+  return abs:andExpr(e1, e2, location=e1.location);
 }
 
 -- table helper functions

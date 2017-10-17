@@ -71,18 +71,21 @@ node {
                doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
                extensions: [
                  [ $class: 'RelativeTargetDirectory',
-                   relativeTargetDir: "extensions/${extension_name}"]
+                   relativeTargetDir: "extensions/${extension_name}"],
+                 [ $class: 'CleanCheckout']
                  ],
                submoduleCfg: scm.submoduleCfg,
                userRemoteConfigs: scm.userRemoteConfigs
              ])
 
       checkout([ $class: 'GitSCM',
-                 branches: [[name: '*/develop']],
+//                 branches: [[name: '*/develop']],
+                 branches: [[name: '*/feature/type_qualifiers']],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [
                    [ $class: 'RelativeTargetDirectory',
-                     relativeTargetDir: 'ableC']
+                     relativeTargetDir: 'ableC'],
+                   [ $class: 'CleanCheckout']
                  ],
                  submoduleCfg: [],
                  userRemoteConfigs: [
