@@ -168,11 +168,7 @@ top::TruthFlag ::=
 function logicalNegate
 abs:Expr ::= ne::abs:Expr
 {
-  return
-    abs:unaryOpExpr(
-      abs:notOp(location=ne.location), 
-      ne,
-      location=ne.location);
+  return abs:notExpr(ne, location=ne.location);
 }
 function logicalOr
 abs:Expr ::= e1::abs:Expr e2::abs:Expr
