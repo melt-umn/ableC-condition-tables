@@ -4,7 +4,7 @@
 #
 # `make build`: build the artifact
 #
-# `make examples`: compile the example uses of the extension
+# `make examples`: compile and run the example uses of the extension
 #
 # `make analyses`: run the modular analyses that provide strong composability
 #                  guarantees
@@ -24,32 +24,37 @@
 #       e.g. `make -B analyses`, `make -B mwda`, etc.
 #
 
+# Path from current directory to top level ableC repository
+ABLEC_BASE?=../../ableC
+# Path from current directory to top level extensions directory
+EXTS_BASE?=../../extensions
+
+MAKEOVERRIDES=ABLEC_BASE=$(abspath $(ABLEC_BASE)) EXTS_BASE=$(abspath $(EXTS_BASE))
+
 all: examples analyses test
 
 build:
-	@cd examples && make ableC.jar
+	$(MAKE) -C examples ableC.jar
 
 examples:
-	@cd examples && make examples
+	$(MAKE) -C examples
 
 analyses: mda mwda
 
 mda:
-	@cd modular_analyses && make mda
+	$(MAKE) -C modular_analyses mda
 
 mwda:
-	@cd modular_analyses && make mwda
+	$(MAKE) -C modular_analyses mwda
 
 test:
-	# the -j option runs the tests in parallel
-	@cd test && make -j
+	$(MAKE) -C tests -k
 
 clean:
 	rm -f *~ 
-	@cd examples && make clean
-	@cd modular_analyses && make clean
-	@cd test && make clean
+	$(MAKE) -C examples clean
+	$(MAKE) -C modular_analyses clean
+	$(MAKE) -C tests clean
 
-.PHONY: all examples analyses mda mwda test clean
+.PHONY: all build examples analyses mda mwda test clean
 .NOTPARALLEL: # Avoid running multiple Silver builds in parallel
-
