@@ -8,7 +8,6 @@ build.xml
 *.jar
 
 # Other files
-modular_analyses/*.timestamp
 examples/*.c
 tests/**/*.c
 *.i
