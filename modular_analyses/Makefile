@@ -29,6 +29,6 @@ mwda.test: $(GRAMMAR_SOURCES)
 	touch $@
 
 clean:
-	rm -f *~ *.jar *.copperdump.html build.xml *.timestamp
+	rm -f *~ *.jar *.copperdump.html build.xml *.test
 
 .PHONY: all mda mwda clean
