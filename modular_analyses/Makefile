@@ -15,15 +15,15 @@ GRAMMAR_SOURCES=$(shell find $(GRAMMAR_DIRS) -name *.sv -print0 | xargs -0)
 override SVFLAGS+=$(addprefix -I , $(GRAMMAR_DIRS))
 
 all: mda mwda
-mda: mda.timestamp
-mwda: mwda.timestamp
+mda: mda.test
+mwda: mwda.test
 
-mda.timestamp: $(GRAMMAR_SOURCES)
+mda.test: $(GRAMMAR_SOURCES)
 	touch $(wildcard $(MDA_ARTIFACT)/*.sv)
 	silver --dont-translate $(SVFLAGS) $(MDA_ARTIFACT)
 	touch $@
 
-mwda.timestamp: $(GRAMMAR_SOURCES)
+mwda.test: $(GRAMMAR_SOURCES)
 	touch $(wildcard $(MWDA_ARTIFACT)/*.sv)
 	silver --dont-translate $(SVFLAGS) --clean --warn-all --warn-error $(MWDA_ARTIFACT)
 	touch $@
