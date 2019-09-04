@@ -82,7 +82,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
   top.preDecls =
     [abs:declStmt(
       abs:variableDecls(
-        [],
+        abs:nilStorageClass(),
         abs:nilAttribute(),
         abs:directTypeExpr(
           abs:builtinType(abs:nilQualifier(), abs:boolType())),
