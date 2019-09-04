@@ -3,7 +3,6 @@ grammar edu:umn:cs:melt:exts:ableC:tables:abstractsyntax;
 imports edu:umn:cs:melt:ableC:abstractsyntax:host as abs;
 imports edu:umn:cs:melt:ableC:abstractsyntax:construction as abs;
 imports edu:umn:cs:melt:ableC:abstractsyntax:env as abs;
-imports edu:umn:cs:melt:ableC:abstractsyntax:substitution as workaround; -- this should perhaps not be an option
 
 imports silver:langutil;
 imports silver:langutil:pp;
@@ -11,7 +10,6 @@ imports silver:langutil:pp;
 abstract production table
 top::abs:Expr ::= trows::TableRows
 {
-  propagate workaround:substituted;
   top.pp = ppConcat( [text("table ("), line(), trows.pp, text(" )")] );
 
   forwards to 
@@ -84,7 +82,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
   top.preDecls =
     [abs:declStmt(
       abs:variableDecls(
-        [],
+        abs:nilStorageClass(),
         abs:nilAttribute(),
         abs:directTypeExpr(
           abs:builtinType(abs:nilQualifier(), abs:boolType())),
