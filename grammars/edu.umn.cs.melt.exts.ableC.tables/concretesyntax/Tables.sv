@@ -6,7 +6,7 @@ imports edu:umn:cs:melt:exts:ableC:tables:abstractsyntax;
 
 imports silver:langutil;
 
-marking terminal Table_t 'table' lexer classes {Keyword, Identifier, ScopedKeyword};
+marking terminal Table_t 'table' lexer classes {Keyword, Global};
 
 terminal NewLine2_t /[\r]?\n/;
 terminal TrueTV_t   'T';
