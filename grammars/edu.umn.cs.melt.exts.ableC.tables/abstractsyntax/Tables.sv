@@ -92,7 +92,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
             abs:baseTypeExpr(),
             abs:nilAttribute(),
             abs:justInitializer(
-              abs:exprInitializer(e))
+              abs:exprInitializer(e, location=top.location))
           )
         ])
       )
