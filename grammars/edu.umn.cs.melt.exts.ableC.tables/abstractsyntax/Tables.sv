@@ -79,7 +79,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
   
   -- Generate a name
   local ident :: abs:Name =
-    abs:name("__table_condition_" ++ toString(genInt()), location = top.location);
+    abs:name("__table_condition_" ++ toString(genIntT()), location = top.location);
   
   top.preDecls =
     [abs:declStmt(
