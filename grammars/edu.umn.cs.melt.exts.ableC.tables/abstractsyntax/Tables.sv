@@ -24,7 +24,8 @@ top::abs:Expr ::= trows::TableRows
 
 -- Table Rows --
 ----------------
-nonterminal TableRows with pp, errors, abs:env, abs:returnType, location, ftExprss, rlen, preDecls;
+nonterminal TableRows with pp, errors, abs:env, location,
+  ftExprss, rlen, preDecls, abs:controlStmtContext;
 
 synthesized attribute preDecls :: [abs:Stmt];
 synthesized attribute ftExprss :: [[abs:Expr]];
@@ -59,7 +60,8 @@ top::TableRows ::= trow::TableRow
 
 -- Table Row --
 ---------------
-nonterminal TableRow with pp, errors, abs:env, abs:returnType, location, ftExprs, rlen, preDecls;
+nonterminal TableRow with pp, errors, abs:env, location,
+  ftExprs, rlen, preDecls, abs:controlStmtContext;
 
 synthesized attribute ftExprs :: [abs:Expr];
 
@@ -92,7 +94,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
             abs:baseTypeExpr(),
             abs:nilAttribute(),
             abs:justInitializer(
-              abs:exprInitializer(e))
+              abs:exprInitializer(e, location=top.location))
           )
         ])
       )
