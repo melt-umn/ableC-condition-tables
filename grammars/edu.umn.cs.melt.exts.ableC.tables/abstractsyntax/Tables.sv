@@ -10,26 +10,23 @@ imports silver:langutil:pp;
 abstract production table
 top::abs:Expr ::= trows::TableRows
 {
-  top.pp = ppConcat( [text("table ("), line(), trows.pp, text(" )")] );
-  propagate abs:env, abs:controlStmtContext;
-
+  forward fwrd =
+    abs:stmtExpr(
+      @trows.preDecls,
+      disjunction(mapConjunction(transpose(trows.ftExprss))),
+      location=top.location);
   forwards to 
     if !null(trows.errors) then
       abs:errorExpr(trows.errors, location=trows.location)
-    else
-      abs:stmtExpr(
-        abs:foldStmt(trows.preDecls),
-        disjunction(mapConjunction(transpose(trows.ftExprss))),
-        location=top.location);
+    else @fwrd;
 }
 
 -- Table Rows --
 ----------------
-nonterminal TableRows with pp, errors, abs:env, location,
+nonterminal TableRows with pp, errors, location,
   ftExprss, rlen, preDecls, abs:controlStmtContext;
-propagate abs:env, abs:controlStmtContext on TableRows;
 
-synthesized attribute preDecls :: [abs:Stmt];
+translation attribute preDecls :: abs:Stmt;
 synthesized attribute ftExprss :: [[abs:Expr]];
 synthesized attribute rlen :: Integer;
 
@@ -41,13 +38,13 @@ top::TableRows ::= trowstail::TableRows  trow::TableRow
   top.errors := trowstail.errors ++ trow.errors;
   top.errors <-
     if trow.rlen == trowstail.rlen then [] else
-      [err(trowstail.location,
+      [err(trow.location,
         "The number of T,F,* entries in table row must be the same " ++
         "as the preceding rows")];
 
   top.rlen = trow.rlen;
   top.ftExprss = trowstail.ftExprss ++ [trow.ftExprs];
-  top.preDecls = trowstail.preDecls ++ trow.preDecls;
+  top.preDecls = abs:seqStmt(@trowstail.preDecls, @trow.preDecls);
 }
 
 abstract production tableRowOne
@@ -57,14 +54,13 @@ top::TableRows ::= trow::TableRow
   top.errors := trow.errors;
   top.rlen = trow.rlen;
   top.ftExprss = [trow.ftExprs];
-  top.preDecls = trow.preDecls;
+  top.preDecls = @trow.preDecls;
 }
 
 -- Table Row --
 ---------------
-nonterminal TableRow with pp, errors, abs:env, location,
-  ftExprs, rlen, preDecls, abs:controlStmtContext;
-propagate abs:env, abs:controlStmtContext on TableRow;
+nonterminal TableRow with pp, errors, location,
+  ftExprs, rlen, preDecls;
 
 synthesized attribute ftExprs :: [abs:Expr];
 
@@ -85,23 +81,23 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
     abs:name("__table_condition_" ++ toString(genInt()), location = top.location);
   
   top.preDecls =
-    [abs:declStmt(
+    abs:declStmt(
       abs:variableDecls(
         abs:nilStorageClass(),
         abs:nilAttribute(),
         abs:directTypeExpr(
           abs:builtinType(abs:nilQualifier(), abs:boolType())),
-        abs:foldDeclarator([
+        abs:consDeclarator(
           abs:declarator(
-            ident,
+            @ident,
             abs:baseTypeExpr(),
             abs:nilAttribute(),
             abs:justInitializer(
-              abs:exprInitializer(e, location=top.location))
-          )
-        ])
+              abs:exprInitializer(@e, location=top.location))),
+          abs:nilDeclarator()
+        )
       )
-    )]; -- _Bool ident = e;
+    ); -- _Bool ident = e;
   
   tvl.rowExpr = 
     abs:declRefExpr(ident, location=top.location);
