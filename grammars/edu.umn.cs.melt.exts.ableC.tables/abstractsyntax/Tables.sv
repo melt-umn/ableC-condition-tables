@@ -10,20 +10,21 @@ imports silver:langutil:pp;
 abstract production table
 top::abs:Expr ::= trows::TableRows
 {
+  top.pp = pp"table { ${box(trows.pp)} }";
+  attachNote extensionGenerated("ableC-condition-tables");
   forward fwrd =
     abs:stmtExpr(
       @trows.preDecls,
-      disjunction(mapConjunction(transpose(trows.ftExprss))),
-      location=top.location);
+      disjunction(mapConjunction(transpose(trows.ftExprss))));
   forwards to 
     if !null(trows.errors) then
-      abs:errorExpr(trows.errors, location=trows.location)
+      abs:errorExpr(trows.errors)
     else @fwrd;
 }
 
 -- Table Rows --
 ----------------
-nonterminal TableRows with pp, errors, location,
+tracked nonterminal TableRows with pp, errors,
   ftExprss, rlen, preDecls, abs:controlStmtContext;
 
 translation attribute preDecls :: abs:Stmt;
@@ -34,11 +35,12 @@ abstract production tableRowSnoc
 top::TableRows ::= trowstail::TableRows  trow::TableRow
 {
   top.pp = ppConcat([trowstail.pp, line(), trow.pp]);
+  attachNote extensionGenerated("ableC-condition-tables");
 
   top.errors := trowstail.errors ++ trow.errors;
   top.errors <-
     if trow.rlen == trowstail.rlen then [] else
-      [err(trow.location,
+      [errFromOrigin(trow,
         "The number of T,F,* entries in table row must be the same " ++
         "as the preceding rows")];
 
@@ -59,7 +61,7 @@ top::TableRows ::= trow::TableRow
 
 -- Table Row --
 ---------------
-nonterminal TableRow with pp, errors, location,
+tracked nonterminal TableRow with pp, errors,
   ftExprs, rlen, preDecls;
 
 synthesized attribute ftExprs :: [abs:Expr];
@@ -68,17 +70,18 @@ abstract production tableRow
 top::TableRow ::= e::abs:Expr tvl::TruthFlagList
 {
   top.pp = ppConcat([e.pp, text(" : "), tvl.pp]);
+  attachNote extensionGenerated("ableC-condition-tables");
   top.errors := e.errors;
   top.rlen = tvl.rlen;
   top.ftExprs = tvl.ftExprs;
   
   top.errors <-
     if abs:typeAssignableTo(abs:builtinType(abs:nilQualifier(), abs:boolType()), e.abs:typerep) then []
-    else [err(e.location, "Condition expression expected type boolean (got " ++ abs:showType(e.abs:typerep) ++ ")")];
+    else [errFromOrigin(e, "Condition expression expected type boolean (got " ++ abs:showType(e.abs:typerep) ++ ")")];
   
   -- Generate a name
   local ident :: abs:Name =
-    abs:name("__table_condition_" ++ toString(genInt()), location = top.location);
+    abs:name("__table_condition_" ++ toString(genInt()));
   
   top.preDecls =
     abs:declStmt(
@@ -92,20 +95,19 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
             @ident,
             abs:baseTypeExpr(),
             abs:nilAttribute(),
-            abs:justInitializer(
-              abs:exprInitializer(@e, location=top.location))),
+            abs:justInitializer(abs:exprInitializer(@e))),
           abs:nilDeclarator()
         )
       )
     ); -- _Bool ident = e;
   
   tvl.rowExpr = 
-    abs:declRefExpr(ident, location=top.location);
+    abs:declRefExpr(ident);
 }
 
 -- Truth Value List
 -------------------
-nonterminal TruthFlagList with pp, rowExpr, ftExprs, rlen;
+tracked nonterminal TruthFlagList with pp, rowExpr, ftExprs, rlen;
 
 inherited attribute rowExpr :: abs:Expr;
 -- the expression in the table row.  It is passed down to the TF*
@@ -135,7 +137,7 @@ top::TruthFlagList ::= tv::TruthFlag
 
 -- Truth Values
 ---------------
-nonterminal TruthFlag with pp, rowExpr, ftExpr;
+tracked nonterminal TruthFlag with pp, rowExpr, ftExpr;
 
 synthesized attribute ftExpr :: abs:Expr;
 
@@ -150,6 +152,7 @@ abstract production tvFalse
 top::TruthFlag ::=
 {
   top.pp = text("F");
+  attachNote extensionGenerated("ableC-condition-tables");
   top.ftExpr = logicalNegate(top.rowExpr);
 }
 
@@ -157,10 +160,10 @@ abstract production tvStar
 top::TruthFlag ::=
 { 
   top.pp = text("*");
+  attachNote extensionGenerated("ableC-condition-tables");
   top.ftExpr =
     abs:realConstant(
-      abs:integerConstant("1", false, abs:noIntSuffix(), location=top.rowExpr.location),
-      location=top.rowExpr.location);
+      abs:integerConstant("1", false, abs:noIntSuffix()));
 }
 
 
@@ -169,17 +172,17 @@ top::TruthFlag ::=
 function logicalNegate
 abs:Expr ::= ne::abs:Expr
 {
-  return abs:notExpr(ne, location=ne.location);
+  return abs:notExpr(ne);
 }
 function logicalOr
 abs:Expr ::= e1::abs:Expr e2::abs:Expr
 {
-  return abs:orExpr(e1, e2, location=e1.location);
+  return abs:orExpr(e1, e2);
 }
 function logicalAnd
 abs:Expr ::= e1::abs:Expr e2::abs:Expr
 {
-  return abs:andExpr(e1, e2, location=e1.location);
+  return abs:andExpr(e1, e2);
 }
 
 -- table helper functions
