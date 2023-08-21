@@ -10,6 +10,7 @@ imports silver:langutil:pp;
 abstract production table
 top::abs:Expr ::= trows::TableRows
 {
+  top.pp = ppConcat( [text("table ("), line(), trows.pp, text(" )")] );
   forward fwrd =
     abs:stmtExpr(
       @trows.preDecls,
