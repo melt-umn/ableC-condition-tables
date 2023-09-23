@@ -11,6 +11,7 @@ abstract production table
 top::abs:Expr ::= trows::TableRows
 {
   top.pp = ppConcat( [text("table ("), line(), trows.pp, text(" )")] );
+  propagate abs:env, abs:controlStmtContext;
 
   forwards to 
     if !null(trows.errors) then
@@ -26,6 +27,7 @@ top::abs:Expr ::= trows::TableRows
 ----------------
 nonterminal TableRows with pp, errors, abs:env, location,
   ftExprss, rlen, preDecls, abs:controlStmtContext;
+propagate abs:env, abs:controlStmtContext on TableRows;
 
 synthesized attribute preDecls :: [abs:Stmt];
 synthesized attribute ftExprss :: [[abs:Expr]];
@@ -62,6 +64,7 @@ top::TableRows ::= trow::TableRow
 ---------------
 nonterminal TableRow with pp, errors, abs:env, location,
   ftExprs, rlen, preDecls, abs:controlStmtContext;
+propagate abs:env, abs:controlStmtContext on TableRow;
 
 synthesized attribute ftExprs :: [abs:Expr];
 
