@@ -1,4 +1,4 @@
-grammar artifact;
+grammar edu:umn:cs:melt:exts:ableC:tables:artifacts:compiler;
 
 {- This Silver specification does litte more than list the desired
    extensions, albeit in a somewhat stylized way.
@@ -16,8 +16,4 @@ parser extendedParser :: cst:Root {
   edu:umn:cs:melt:exts:ableC:tables;
 } 
 
-function main
-IOVal<Integer> ::= args::[String] io_in::IOToken
-{
-  return driver(args, io_in, extendedParser);
-}
+fun main IO<Integer> ::= args::[String] = driver(args, extendedParser);

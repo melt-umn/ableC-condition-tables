@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -eu
+
+if [ ! -d ../../../ableC ]; then
+    echo "Expected to this repository to be checked out in an extensions/ folder at the same level as the ableC."
+fi
+
+if [ ! -f ../../../ableC/ableC.jar ]; then
+    echo "Build ableC.jar first by running the build script in the ableC directory."
+fi
+
+if [ ! -f ../ableC-condition-tables.jar ]; then
+    echo "Build ableC-condition-tables.jar first by running 'make build' in the ableC-condition-tables directory."
+fi
+
+set -x
+
+silver -I ../ableC-condition-tables.jar -I ../../../ableC/ableC.jar -I ../grammars -o compiler.jar $@ edu:umn:cs:melt:exts:ableC:tables:artifacts:compiler
+
+java -Xss8M -jar compiler.jar simple.xc
+gcc -c simple.c -o simple.o
+gcc simple.o -o simple.out
+./simple.out
+
+java -Xss8M -jar compiler.jar altitude_switch.xc
+gcc -c altitude_switch.c -o altitude_switch.o
+gcc altitude_switch.o -o altitude_switch.out
+./altitude_switch.out

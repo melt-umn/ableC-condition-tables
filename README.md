@@ -25,7 +25,7 @@ This table is semantically equivalent to this less intuitive
 expression.
 ```
     int c2 = ((b1 && b3) && ((! b2) && (!(b2 || b3)))) || 
-             ((!(b1 && b3)) && (1 && (b2 || b3));
+             ((!(b1 && b3)) && (1 && (b2 || b3)));
 ```
 In the actual translation of these tables to plain C code, expressions
 in the table are not evaluated twice because they may contain side
