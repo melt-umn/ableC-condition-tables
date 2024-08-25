@@ -77,10 +77,10 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
   
   top.errors <-
     if abs:typeAssignableTo(abs:builtinType(abs:nilQualifier(), abs:boolType()), e.abs:typerep) then []
-    else [errFromOrigin(e, "Condition expression expected type boolean (got " ++ abs:showType(e.abs:typerep) ++ ")")];
+    else [errFromOrigin(e, "Condition expression expected type boolean (got " ++ show(80, e.abs:typerep) ++ ")")];
   
   -- Generate a name
-  local ident :: abs:Name =
+  nondecorated local ident :: abs:Name =
     abs:name("__table_condition_" ++ toString(genInt()));
   
   top.preDecls =
@@ -92,7 +92,7 @@ top::TableRow ::= e::abs:Expr tvl::TruthFlagList
           abs:builtinType(abs:nilQualifier(), abs:boolType())),
         abs:consDeclarator(
           abs:declarator(
-            @ident,
+            ident,
             abs:baseTypeExpr(),
             abs:nilAttribute(),
             abs:justInitializer(abs:exprInitializer(@e))),
@@ -153,7 +153,7 @@ top::TruthFlag ::=
 {
   top.pp = text("F");
   attachNote extensionGenerated("ableC-condition-tables");
-  top.ftExpr = logicalNegate(top.rowExpr);
+  top.ftExpr = abs:notExpr(top.rowExpr);
 }
 
 abstract production tvStar
@@ -166,32 +166,13 @@ top::TruthFlag ::=
       abs:integerConstant("1", false, abs:noIntSuffix()));
 }
 
-
--- Our AST construction helper functions
-
-function logicalNegate
-abs:Expr ::= ne::abs:Expr
-{
-  return abs:notExpr(ne);
-}
-function logicalOr
-abs:Expr ::= e1::abs:Expr e2::abs:Expr
-{
-  return abs:orExpr(e1, e2);
-}
-function logicalAnd
-abs:Expr ::= e1::abs:Expr e2::abs:Expr
-{
-  return abs:andExpr(e1, e2);
-}
-
 -- table helper functions
 -------------------------
 function disjunction
 abs:Expr ::= es::[abs:Expr]
 {
   return if length(es) == 1 then head(es)
-         else logicalOr(head(es), disjunction(tail(es)));
+         else abs:orExpr(head(es), disjunction(tail(es)));
 }
 function mapConjunction
 [abs:Expr] ::= ess::[[abs:Expr]]
@@ -204,7 +185,7 @@ function conjunction
 abs:Expr ::= es::[abs:Expr]
 {
   return if length(es) == 1 then head(es)
-         else logicalAnd(head(es), conjunction(tail(es)));
+         else abs:andExpr(head(es), conjunction(tail(es)));
 }
 function transpose
 [[a]] ::= m::[[a]]
