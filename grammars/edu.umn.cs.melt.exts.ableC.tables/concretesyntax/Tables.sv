@@ -22,36 +22,36 @@ disambiguate NewLine2_t, cnc:NewLine_t
 concrete production table_c
 top::cnc:PrimaryExpr_c ::= 'table' '{' trows::TableRows_c '}'
 {
-  top.ast = table(trows.ast, location=top.location);
+  top.ast = table(trows.ast);
 }
 
 
-nonterminal TableRows_c with ast<TableRows>, location;
+tracked nonterminal TableRows_c with ast<TableRows>;
 
 concrete production tableRowSnoc_c
 top::TableRows_c ::= trowstail::TableRows_c  n::NewLine2_t  trow::TableRow_c
 layout { cnc:Spaces_t }
 {
-  top.ast = tableRowSnoc(trowstail.ast, trow.ast, location=top.location);
+  top.ast = tableRowSnoc(trowstail.ast, trow.ast);
 }
 
 concrete production tableRowOne_c
 top::TableRows_c ::= trow::TableRow_c
 {
-  top.ast = tableRowOne(trow.ast, location=top.location);
+  top.ast = tableRowOne(trow.ast);
 }
 
 
-nonterminal TableRow_c  with ast<TableRow>, location;
+tracked nonterminal TableRow_c  with ast<TableRow>;
 
 concrete production tableRow_c
 top::TableRow_c ::= e::cnc:Expr_c ':' tvs::TruthValueList_c
 {
-  top.ast = tableRow(e.ast, tvs.ast, location=top.location);
+  top.ast = tableRow(e.ast, tvs.ast);
 }
 
 
-nonterminal TruthValueList_c with ast<TruthFlagList>, location;
+tracked nonterminal TruthValueList_c with ast<TruthFlagList>;
 
 concrete production tvlistCons_c
 top::TruthValueList_c ::= tv::TruthValue_c  tvltail::TruthValueList_c
@@ -66,7 +66,7 @@ top::TruthValueList_c ::= tv::TruthValue_c
 }
 
 
-nonterminal TruthValue_c with ast<TruthFlag>, location;
+tracked nonterminal TruthValue_c with ast<TruthFlag>;
 
 concrete production tvTrue_c
 top::TruthValue_c ::= truetv::TrueTV_t
